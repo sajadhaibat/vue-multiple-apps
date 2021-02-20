@@ -54,6 +54,7 @@ const Page500 = () => import('@/views/pages/Page500')
 // Custom Tests
 const askQuestions = () => import('@/views/askQuestions')
 const Counter = () => import('@/views/Counter/Counter')
+const Weather = () => import('@/views/Weather/weather')
 function configRoutes () {
   return [
     {
@@ -302,7 +303,12 @@ function configRoutes () {
           path: '/counter',
           name: 'counter',
           component: Counter,
-        }
+        },
+        {
+          path: '/weather',
+          name: 'weather',
+          component: Weather,
+        },
       ]
     },
     {

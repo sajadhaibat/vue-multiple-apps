@@ -233,6 +233,12 @@ export default [
         to: '/counter',
         icon: 'cil-speedometer'
       },
+      {
+        _name: 'CSidebarNavItem',
+        name: 'Weather App',
+        to: '/weather',
+        icon: 'cilCloudy'
+      },
       // {
       //   _name: 'CSidebarNavItem',
       //   name: 'Download CoreUI',
