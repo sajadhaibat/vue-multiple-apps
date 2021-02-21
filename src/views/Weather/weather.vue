@@ -10,7 +10,7 @@
                         </CCardHeader>
                         <CCollapse :show="formCollapsed" class="p-0 m-0">
                             <CCardBody id="card-body" class="p-0 m-0">
-                                <img id="img" src="../../../public/weather/cold.jpg"  width="100%" height="100%" alt="">
+                                <img id="img" :src="img"  width="100%" height="100%" alt="">
 
                                 <div id="country-id">
                                 <CInput
@@ -18,19 +18,21 @@
                                         autocomplete="text"
                                         Placeholder = "Please type Country Name Here, eg. Afghanistan.."
                                         id="country"
+                                        v-model="query"
+                                        @keypress.enter="fetchWeather"
                                 />
                                 </div>
-                                <div id="info">
+                                <div id="info" v-if="dataAccess">
                                     <div id="info-country">
-                                    <h3 class="font-weight-bold">Afghansitan, AFG</h3>
-                                        <span class="font-weight-bold font-sm">  Sunday, 20201</span>
+                                    <h3 class="font-weight-bold">{{weather.name}}, {{weather.sys.country}}</h3>
+                                        <span class="font-weight-bold font-sm">{{todayDate()}}</span>
                                     </div>
                                     <div id="degree-box">
-                                        <h1 class="font-weight-bolder">31 <sup>0</sup> C</h1>
+                                        <h1 class="font-weight-bolder">{{Math.round(weather.main.temp)}} <sup>0</sup> C</h1>
                                     </div>
 
                                     <div id="weather-status">
-                                        <h1>Rain</h1>
+                                        <h1>{{ weather.weather[0].main }}</h1>
                                     </div>
                                 </div>
                             </CCardBody>
@@ -49,6 +51,38 @@
             return {
                 show:true,
                 formCollapsed: true,
+                api_key: '592095b81b9e01e6f69144446c1db6ab',
+                url_base: 'https://api.openweathermap.org/data/2.5/',
+                query: '',
+                dataAccess: false,
+                weather: {},
+                img: '../../../public/weather/cold.jpg'
+            }
+        },
+        methods: {
+            fetchWeather(){
+                fetch(`${this.url_base}weather?q=${this.query}&units=metric&&APPID=${this.api_key}`)
+                    .then(res => {
+                        return res.json();
+                    }).then( results => {
+                        this.dataAccess = true;
+                    this.weather = results;
+                });
+            },
+
+            todayDate(){
+                var d = new Date();
+                var day = d.getDate();
+                var month = d.getMonth()+1;
+                var year = d.getFullYear();
+                if (day < 10) {
+                    day = "0" + day;
+                }
+                if (month < 10) {
+                    month = "0" + month;
+                }
+                console.log(d)
+                return  `${day}, ${month}, ${year}`;
             }
         }
     }
