@@ -10,7 +10,7 @@
                         </CCardHeader>
                         <CCollapse :show="formCollapsed" class="p-0 m-0">
                             <CCardBody id="card-body" class="p-0 m-0">
-                                <img id="img" :src="img"  width="100%" height="100%" alt="">
+                                <img id="img" :src="require(`../../../public/weather/${img}`)"  width="100%" height="100%" alt="">
 
                                 <div id="country-id">
                                 <CInput
@@ -22,7 +22,7 @@
                                         @keypress.enter="fetchWeather"
                                 />
                                 </div>
-                                <div id="info" v-if="dataAccess">
+                                <div id="info" v-if="dataAccess && !displayErrorMessage">
                                     <div id="info-country">
                                     <h3 class="font-weight-bold">{{weather.name}}, {{weather.sys.country}}</h3>
                                         <span class="font-weight-bold font-sm">{{todayDate()}}</span>
@@ -34,6 +34,9 @@
                                     <div id="weather-status">
                                         <h1>{{ weather.weather[0].main }}</h1>
                                     </div>
+                                </div>
+                                <div id="error-message" v-if="displayErrorMessage">
+                                    <h2>Country or City Not Found!</h2>
                                 </div>
                             </CCardBody>
                         </CCollapse>
@@ -56,7 +59,8 @@
                 query: '',
                 dataAccess: false,
                 weather: {},
-                img: '../../../public/weather/cold.jpg'
+                img: 'cold.jpg',
+                displayErrorMessage: false
             }
         },
         methods: {
@@ -64,9 +68,20 @@
                 fetch(`${this.url_base}weather?q=${this.query}&units=metric&&APPID=${this.api_key}`)
                     .then(res => {
                         return res.json();
-                    }).then( results => {
+                    })
+                    .then( results => {
+                        this.displayErrorMessage = false;
+                        if (Math.round(results.main.temp) > 15){
+                            this.img = 'sunny.jpg'
+                        }
+                        else {
+                            this.img = 'cold.jpg'
+                        }
                         this.dataAccess = true;
-                    this.weather = results;
+                        this.weather = results;
+                    }).catch((error) => {
+                    console.error('Error:', error);
+                    this.displayErrorMessage = true
                 });
             },
 
@@ -81,7 +96,6 @@
                 if (month < 10) {
                     month = "0" + month;
                 }
-                console.log(d)
                 return  `${day}, ${month}, ${year}`;
             }
         }
@@ -109,6 +123,14 @@
         top: 25px;
         width: 90%;
         left: 5%;
+    }
+    #error-message {
+        position: absolute;
+        top: 80px;
+        width: 80%;
+        left: 5%;
+        text-align: center;
+        color: #f7f7f7;
     }
     #info-country{
         position: absolute;
